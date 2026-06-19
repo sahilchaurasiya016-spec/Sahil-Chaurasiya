@@ -14,8 +14,9 @@ export default function ContactForm({ onNewSubmission }: ContactFormProps) {
   
   const [formError, setFormError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
 
@@ -32,29 +33,60 @@ export default function ContactForm({ onNewSubmission }: ContactFormProps) {
       return;
     }
 
-    // Creating actual persistent inquiry Object mapping
-    const newInq: ContactInquiry = {
-      id: "inq-" + Date.now(),
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim() || "N/A",
-      message: message.trim(),
-      timestamp: new Date().toISOString(),
-      status: "new",
-    };
+    setIsSubmitting(true);
 
-    onNewSubmission(newInq);
-    setSubmitted(true);
+    try {
+      // Send form data to FormSubmit.co
+      const response = await fetch("https://formsubmit.co/ajax/sahilchaurasiya016@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim() || "N/A",
+          message: message.trim(),
+          _subject: `New Portfolio Message from ${name.trim()}`,
+          _replyto: email.trim(),
+          _honey: "" // anti-spam bot field
+        })
+      });
 
-    // Clear inputs
-    setName("");
-    setEmail("");
-    setPhone("");
-    setMessage("");
+      if (!response.ok) {
+        throw new Error("Unable to forward the email. Please try direct email Instead!");
+      }
 
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 5000);
+      // Live client storage logging
+      const newInq: ContactInquiry = {
+        id: "inq-" + Date.now(),
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim() || "N/A",
+        message: message.trim(),
+        timestamp: new Date().toISOString(),
+        status: "new",
+      };
+
+      onNewSubmission(newInq);
+      setSubmitted(true);
+
+      // Reset inputs
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 7000);
+    } catch (err: any) {
+      console.error("Form transmission failed:", err);
+      setFormError(err.message || "An unexpected error occurred. Please try sending directly to sahilchaurasiya016@gmail.com");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -251,10 +283,13 @@ export default function ContactForm({ onNewSubmission }: ContactFormProps) {
                 <button
                   id="btn_contact_submit"
                   type="submit"
-                  className="w-full bg-[#141414] hover:bg-[#141414]/90 text-[#F2F2EC] font-black uppercase tracking-widest py-4 rounded border-2 border-[#141414] shadow-[3px_3px_0px_#141414] hover:shadow-[5px_5px_0px_#141414] transition-all flex items-center justify-center gap-2 cursor-pointer text-xs"
+                  disabled={isSubmitting}
+                  className={`w-full bg-[#141414] hover:bg-[#141414]/90 text-[#F2F2EC] font-black uppercase tracking-widest py-4 rounded border-2 border-[#141414] shadow-[3px_3px_0px_#141414] hover:shadow-[5px_5px_0px_#141414] transition-all flex items-center justify-center gap-2 text-xs ${
+                    isSubmitting ? "opacity-75 cursor-not-allowed" : "cursor-pointer"
+                  }`}
                 >
-                  <Send className="w-4 h-4 animate-bounce" />
-                  <span>Submit Client Proposal</span>
+                  <Send className={`w-4 h-4 ${isSubmitting ? "animate-spin" : "animate-bounce"}`} />
+                  <span>{isSubmitting ? "Sending..." : "Submit Client Proposal"}</span>
                 </button>
 
               </form>
