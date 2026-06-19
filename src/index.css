@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-brand-bg: #F2F2EC;
+  --color-brand-dark: #141414;
+  --color-brand-accent: #E4E4DF;
+  --color-accent-blue: #2563eb;
+  --color-accent-teal: #0d9488;
+  --color-charcoal-dark: #141414;
+  --color-charcoal-gray: #E4E4DF;
+  --color-cream-light: #ffffff;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: #F2F2EC; /* Artistic Flair background color */
+    color: #141414;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom text-stroke effect representing the Artistic Flair */
+.text-stroke {
+  -webkit-text-stroke: 1.5px #141414;
+  color: transparent;
+}
+.text-stroke-sm {
+  -webkit-text-stroke: 1px #141414;
+  color: transparent;
+}
+
+/* Custom modern scrollbar styles adhering to the color scheme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #F2F2EC;
+}
+::-webkit-scrollbar-thumb {
+  background: #C8C8BE;
+  border: 2px solid #F2F2EC;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #141414;
+}
+
